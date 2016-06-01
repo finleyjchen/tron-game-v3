@@ -11,7 +11,7 @@ import java.awt.event.KeyListener;
 public class Main extends JFrame implements ActionListener, KeyListener
 {
 
-    private static Timer timer;
+    private static Timer timer, menuTimer;
     public static final int WIDTH = 1400, HEIGHT = 800;
     private static Racer racer1, racer2;
     private static RacerView view;
@@ -29,48 +29,7 @@ public class Main extends JFrame implements ActionListener, KeyListener
 
     public Main()
     {
-        cardLayout = new CardLayout();
-        setSize(WIDTH,  HEIGHT);
-        setTitle("Tr0n");
-        setLocation (50, 50);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        c = getContentPane();
-        c.setBackground(Color.DARK_GRAY);
-
-        c.setLayout(cardLayout);
-
-
-        racer1 = new Racer(50, HEIGHT / 2, "right");
-        racer2 = new Racer(WIDTH - 50, HEIGHT / 2, "left");
-        timer = new Timer(30, this);
-        view = new RacerView(racer1, racer2);
-        try {
-            menuView = new MenuView();
-        } catch(Exception e)
-        {
-            System.out.println("Error");
-        }
-        c.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        c.add(menuView);
-        c.add(view);
-        pack();
-
-        JMenuItem m;
-        JMenu menu = new JMenu("Options");
-        m = new JMenuItem("Play");	// Create a menu option
-        m.addActionListener(this);
-        menu.add(m);
-        m = new JMenuItem("Pause");	// Create a menu option
-        m.addActionListener(this);
-        menu.add(m);
-
-        JMenuBar mBar = new JMenuBar();
-        mBar.add(menu);
-        setJMenuBar(mBar);
-        racer1.addObserver(view);
-        racer2.addObserver(view);
-        addKeyListener(this);
-
+       start();
         //Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor("volger.png", new Point(0, 0), "Name");
 
 
@@ -78,18 +37,43 @@ public class Main extends JFrame implements ActionListener, KeyListener
 
     public void actionPerformed(ActionEvent e)
     {
+        if(e.getSource() == menuTimer)
+        {
+            if(menuView.isRunning() == false)
+            {
+                menuTimer.stop();
+                cardLayout.next(c);
+                timer.start();
+            }
+        }
         if(e.getSource() == timer)
         {
             if(racer1.checkLost() == false)
                 racer1.move();
             else if(racer1.checkLost()) {
+                timer.stop();
                 JOptionPane.showMessageDialog(null, "Racer 1 Lost, Racer 2 Wins");
-                JOptionPane.showConfirmDialog(null, "Play again?");
+                int reply = JOptionPane.showConfirmDialog(null, "Play again?", "You Lost", JOptionPane.YES_NO_OPTION);
+                if(reply == JOptionPane.YES_OPTION)
+                {
+                    restart();
+                    cardLayout.next(c);
+
+                }
+
             }
             if(racer2.checkLost() == false)
                 racer2.move();
-            else if(racer2.checkLost())
+            else if(racer2.checkLost()) {
+                timer.stop();
                 JOptionPane.showMessageDialog(null, "Racer 2 Lost, Racer 1 Wins");
+                int reply = JOptionPane.showConfirmDialog(null, "Play again?", "You Lost", JOptionPane.YES_NO_OPTION);
+                if(reply == JOptionPane.YES_OPTION) {
+                    restart();
+                    cardLayout.next(c);
+                }
+            }
+
         }
 
         if(e.getActionCommand() == "Play")
@@ -98,10 +82,13 @@ public class Main extends JFrame implements ActionListener, KeyListener
             timer.start();
         }
 
+
         if(e.getActionCommand() == "Pause")
         {
             cardLayout.next(c);
             timer.stop();
+            menuTimer.start();
+            menuView.setRunning(true);
         }
 
 
@@ -176,6 +163,68 @@ public class Main extends JFrame implements ActionListener, KeyListener
 
     }
 
+    public void start()
+    {
+        cardLayout = new CardLayout();
+        setSize(WIDTH,  HEIGHT);
+        setTitle("Tr0n");
+        setLocation (50, 50);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        c = getContentPane();
+        c.setBackground(Color.DARK_GRAY);
 
+        c.setLayout(cardLayout);
+
+
+        racer1 = new Racer(50, HEIGHT / 2, "right");
+        racer2 = new Racer(WIDTH - 50, HEIGHT / 2, "left");
+        racer1.setColor(Color.red);
+        racer2.setColor(Color.blue);
+        timer = new Timer(30, this);
+        menuTimer = new Timer(30, this);
+
+        try {
+            menuView = new MenuView(racer1, racer2);
+        } catch(Exception e)
+        {
+            System.out.println("Error");
+        }
+        view = new RacerView(racer1, racer2);
+        c.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        c.add(menuView);
+        c.add(view);
+        pack();
+
+        JMenuItem m;
+        JMenu menu = new JMenu("Options");
+        m = new JMenuItem("Pause");	// Create a menu option
+        m.addActionListener(this);
+        menu.add(m);
+        m = new JMenuItem("How to Play");
+
+        JMenuBar mBar = new JMenuBar();
+        mBar.add(menu);
+        setJMenuBar(mBar);
+        racer1.addObserver(view);
+        racer2.addObserver(view);
+        addKeyListener(this);
+        menuTimer.start();
+    }
+
+    public void restart()
+    {
+        menuView.setRunning(true);
+
+        timer = null;
+        menuTimer = null;
+        racer1 = null;
+        racer2 = null;
+        view = null;
+        scorePanel = null;
+        menuView = null;
+        cardLayout = null;
+        c = null;
+        start();
+    }
 
 }

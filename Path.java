@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.util.Random;
 
 /**
  * Created by root on 5/23/16.
@@ -19,7 +18,6 @@ public class Path {
         this.y = y;
         this.width = width;
         this.height = height;
-        color = new Color((int)(Math.random() * 0x1000000));
     }
 
     public void draw(Graphics g) {

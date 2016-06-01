@@ -33,7 +33,8 @@ public class RacerView extends JPanel implements Observer {
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-        g.setColor(new Color((int)(Math.random() * 0x1000000)));
+        g.setColor(racer1.getColor());
+
         if(racer1.getDirection().equals("up")){
             g.fillRect(racer1.getX(), racer1.getY(), 20, 20);
             trailList1.add(new Path(racer1.getX() + 8, racer1.getY() + 20, trailSize, trailSize));
@@ -53,7 +54,7 @@ public class RacerView extends JPanel implements Observer {
         }
 
 
-        g.setColor(new Color((int)(Math.random() * 0x1000000)));
+        g.setColor(racer2.getColor());
 
         if(racer2.getDirection().equals("up")){
             g.fillRect(racer2.getX(), racer2.getY(), 20, 20);
@@ -73,7 +74,9 @@ public class RacerView extends JPanel implements Observer {
             trailList2.add(new Path(racer2.getX() - trailSize, racer2.getY()  + 8, trailSize, trailSize));
         }
         for(int k = 0; k < trailList1.size(); k++) {
+            g.setColor(racer1.getColor());
             trailList1.get(k).draw(g);
+            g.setColor(racer2.getColor());
             trailList2.get(k).draw(g);
         }
 

@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.Observable;
 /**
  * Created by root on 5/23/16.
@@ -7,6 +8,7 @@ public class Racer extends Observable {
     private int[][] field;
     private String direction;
     private Path path;
+    private Color color;
 
 
     public Racer()
@@ -24,6 +26,17 @@ public class Racer extends Observable {
         speed = 5;
         this.direction = direction;
         field = new int[640][360];
+        color = Color.CYAN;
+    }
+
+    public Color getColor()
+    {
+        return color;
+    }
+
+    public void setColor(Color c)
+    {
+        color = c;
     }
 
     public void move()
